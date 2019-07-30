@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 
 import 'message_codec.dart';
 import 'system_channels.dart';
@@ -730,4 +731,13 @@ abstract class PlatformViewController {
   ///
   /// It is used when handling semantics, composition orders and etc.
   int get id;
+
+  /// Dispatches the `event` to the platform view.
+  void dispatchPointerEvent(PointerEvent event);
+
+  /// Accept an active gesture.
+  Future<void> acceptGesture(int pointer);
+
+  /// Rejects an active gesture.
+  Future<void> rejectGesture(int pointer);
 }

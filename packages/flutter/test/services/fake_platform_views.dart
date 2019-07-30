@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 /// Used in internal testing.
 class FakePlatformViewController extends PlatformViewController {
@@ -16,10 +17,42 @@ class FakePlatformViewController extends PlatformViewController {
     _id = id;
   }
 
+  /// Events that are dispatched;
+  List<PointerEvent> dispatchedPointerEvents = <PointerEvent>[];
+
+  /// Gestures that are forwarded;
+  List<int> forwardedGestures = <int>[];
+
+  /// Gestures that are rejected;
+  List<int> rejectedGestures = <int>[];
+
   int _id;
 
   @override
-  int get id => _id; 
+  int get id => _id;
+
+  @override
+  void dispatchPointerEvent(PointerEvent event) {
+    dispatchedPointerEvents.add(event);
+  }
+
+  @override
+  Future<void> acceptGesture(int pointer) {
+    forwardedGestures.add(pointer);
+    return null;
+  }
+
+  @override
+  Future<void> rejectGesture(int pointer) {
+    rejectedGestures.add(pointer);
+    return null;
+  }
+
+  void clearTestingVariables() {
+    dispatchedPointerEvents.clear();
+    forwardedGestures.clear();
+    rejectedGestures.clear();
+  }
 }
 
 class FakeAndroidPlatformViewsController {

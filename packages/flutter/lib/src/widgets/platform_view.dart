@@ -648,7 +648,11 @@ class PlatformViewSurface extends LeafRenderObjectWidget {
   /// this [PlatformViewSurface] in the layer tree.
   const PlatformViewSurface({
     @required this.controller,
-  }) : assert(controller != null);
+    @required this.hitTestBehavior,
+    @required this.gestureRecognizers,
+  }) : assert(controller != null),
+       assert(hitTestBehavior != null),
+       assert(gestureRecognizers != null);
 
   /// A controller for a platform view.
   ///
@@ -665,9 +669,53 @@ class PlatformViewSurface extends LeafRenderObjectWidget {
   /// See [PlatformViewController] for how to implement a new PlatformViewController.
   final PlatformViewController controller;
 
+  /// Which gestures should be forwarded to the PlatformView.
+  ///
+  /// {@macro flutter.widgets.platformViews.gestureRecognizersDescHead}
+  ///
+  /// For example, with the following setup vertical drags will not be dispatched to the UIKit
+  /// view as the vertical drag gesture is claimed by the parent [GestureDetector].
+  ///
+  /// ```dart
+  /// GestureDetector(
+  ///   onVerticalDragStart: (DragStartDetails details) {},
+  ///   child: PlatformViewSurface(
+  ///   ),
+  /// )
+  /// ```
+  ///
+  /// To get the [PlatformViewSurface] to claim the vertical drag gestures we can pass a vertical drag
+  /// gesture recognizer factory in [gestureRecognizers] e.g:
+  ///
+  /// ```dart
+  /// GestureDetector(
+  ///   onVerticalDragStart: (DragStartDetails details) {},
+  ///   child: SizedBox(
+  ///     width: 200.0,
+  ///     height: 100.0,
+  ///     child: PlatformViewSurface(
+  ///       gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+  ///         new Factory<OneSequenceGestureRecognizer>(
+  ///           () => new EagerGestureRecognizer(),
+  ///         ),
+  ///       ].toSet(),
+  ///     ),
+  ///   ),
+  /// )
+  /// ```
+  ///
+  /// {@macro flutter.widgets.platformViews.gestureRecognizersDescFoot}
+  // We use OneSequenceGestureRecognizers as they support gesture arena teams.
+  // TODO(amirh): get a list of GestureRecognizers here.
+  // https://github.com/flutter/flutter/issues/20953
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  /// {@macro flutter.widgets.platformViews.hittestParam}
+  final PlatformViewHitTestBehavior hitTestBehavior;
+
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return PlatformViewRenderBox(controller: controller);
+    return PlatformViewRenderBox(controller: controller, gestureRecognizers: gestureRecognizers, hitTestBehavior: hitTestBehavior);
   }
 
   @override
