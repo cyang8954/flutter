@@ -20,12 +20,6 @@ class FakePlatformViewController extends PlatformViewController {
   /// Events that are dispatched;
   List<PointerEvent> dispatchedPointerEvents = <PointerEvent>[];
 
-  /// Gestures that are forwarded;
-  List<int> forwardedGestures = <int>[];
-
-  /// Gestures that are rejected;
-  List<int> rejectedGestures = <int>[];
-
   int _id;
 
   @override
@@ -36,22 +30,8 @@ class FakePlatformViewController extends PlatformViewController {
     dispatchedPointerEvents.add(event);
   }
 
-  @override
-  Future<void> acceptGesture(int pointer) {
-    forwardedGestures.add(pointer);
-    return null;
-  }
-
-  @override
-  Future<void> rejectGesture(int pointer) {
-    rejectedGestures.add(pointer);
-    return null;
-  }
-
   void clearTestingVariables() {
     dispatchedPointerEvents.clear();
-    forwardedGestures.clear();
-    rejectedGestures.clear();
   }
 }
 

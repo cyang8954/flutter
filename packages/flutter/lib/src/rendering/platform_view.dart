@@ -926,14 +926,12 @@ class _PlatformViewGestureRecognizerCaptain extends OneSequenceGestureRecognizer
   void acceptGesture(int pointer) {
     flushPointerCache(pointer);
     forwardedPointers.add(pointer);
-    controller.acceptGesture(pointer);
   }
 
   @override
   void rejectGesture(int pointer) {
     stopTrackingPointer(pointer);
     cachedEvents.remove(pointer);
-    controller.rejectGesture(pointer);
   }
 
   @override

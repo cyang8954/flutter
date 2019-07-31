@@ -1718,14 +1718,6 @@ void main() {
         controller.dispatchedPointerEvents,
         isEmpty,
       );
-      expect(
-        controller.forwardedGestures,
-        isEmpty,
-      );
-      expect(
-        controller.rejectedGestures.length,
-        1,
-      );
     });
 
     testWidgets('PlatformViewSurface gesture recognizers dispatch events', (WidgetTester tester) async {
@@ -1766,14 +1758,7 @@ void main() {
         controller.dispatchedPointerEvents.length,
         3,
       );
-      expect(
-        controller.forwardedGestures.length,
-        1,
-      );
-      expect(
-        controller.rejectedGestures,
-        isEmpty,
-      );
+
     });
 
     testWidgets(
@@ -1810,14 +1795,7 @@ void main() {
         controller.dispatchedPointerEvents.length,
         2,
       );
-      expect(
-        controller.forwardedGestures.length,
-        1,
-      );
-      expect(
-        controller.rejectedGestures,
-        isEmpty,
-      );
+
     });
 
     testWidgets('PlatformViewSurface rebuilt during gesture', (WidgetTester tester) async {
@@ -1860,14 +1838,6 @@ void main() {
         controller.dispatchedPointerEvents.length,
         3,
       );
-      expect(
-        controller.forwardedGestures.length,
-        1,
-      );
-      expect(
-        controller.rejectedGestures,
-        isEmpty,
-      );
     });
 
     testWidgets('PlatformViewSurface with eager gesture recognizer', (WidgetTester tester) async {
@@ -1902,14 +1872,6 @@ void main() {
       expect(
         controller.dispatchedPointerEvents.length,
         1,
-      );
-      expect(
-        controller.forwardedGestures.length,
-        1,
-      );
-      expect(
-        controller.rejectedGestures,
-        isEmpty,
       );
     });
 

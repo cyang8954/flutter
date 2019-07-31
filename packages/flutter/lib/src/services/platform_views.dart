@@ -734,10 +734,4 @@ abstract class PlatformViewController {
 
   /// Dispatches the `event` to the platform view.
   void dispatchPointerEvent(PointerEvent event);
-
-  /// Accept an active gesture.
-  Future<void> acceptGesture(int pointer);
-
-  /// Rejects an active gesture.
-  Future<void> rejectGesture(int pointer);
 }
