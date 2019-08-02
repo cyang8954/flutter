@@ -585,7 +585,7 @@ class _UiKitPlatformView extends LeafRenderObjectWidget {
 ///
 /// The compositor integration is done by adding a [PlatformViewLayer] to the layer tree. [PlatformViewLayer]
 /// isn't supported on all platforms (e.g on Android platform views are composited using a [TextureLayer]).
-/// Custom Flutter embedders can support [PlatformViewLayer]s by implementing a SystemCompositor.
+/// Custom Flutter embeddprs can support [PlatformViewLayer]s by implementing a SystemCompositor.
 ///
 /// The widget fills all available space, the parent of this object must provide bounded layout
 /// constraints.

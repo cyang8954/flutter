@@ -628,7 +628,7 @@ class _MotionEventsDispatcher {
     }
   }
 
-  void  dispatchPointerEvent(PointerEvent event) {
+  void dispatchPointerEvent(PointerEvent event) {
     final List<int> pointers = pointerPositions.keys.toList();
     final int pointerIdx = pointers.indexOf(event.pointer);
     final int numPointers = pointers.length;
@@ -858,9 +858,9 @@ class PlatformViewRenderBox extends RenderBox {
 }
 
 // This recognizer constructs gesture recognizers from a set of gesture recognizer factories
-// it was give, adds all of them to a gesture arena team with the _PlatformViewGestureRecognizerCaptain
+// it was given, adds all of them to a gesture arena team with the _PlatformViewGestureRecognizerCaptain
 // as the team captain.
-// As long as ta gesture arena is unresolved the recognizer caches all pointer events.
+// As long as the gesture arena is unresolved the recognizer caches all pointer events.
 // When the team wins the recognizer sends all the cached point events to the [PlatformViewController], and
 // sets itself to a "forwarding mode" where it will forward any new pointer event to the [PlatformViewController].
 class _PlatformViewGestureRecognizerCaptain extends OneSequenceGestureRecognizer {
