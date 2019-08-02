@@ -23,7 +23,7 @@ class FakePlatformViewController extends PlatformViewController {
   int _id;
 
   @override
-  int get id => _id;
+  int get viewId => _id;
 
   @override
   void dispatchPointerEvent(PointerEvent event) {

@@ -717,20 +717,15 @@ class UiKitViewController {
 
 /// An interface for a controlling a single platform view.
 ///
-/// Used by [PlatformViewSurface] to interface with the platform it embeds.
+/// Used by [PlatformViewSurface] to interface with the platform view it embeds.
 abstract class PlatformViewController {
 
-  /// The platform view id associated with this controller.
+  /// The viewId associated with this controller.
   ///
-  /// The id should always be unique and non-negative. And it must be set
-  /// to a non-null value at the construction, or right after construction.
+  /// The viewId should always be unique and non-negative. And it must not be null.
   ///
-  /// The id should be generated with [PlatformViewsRegistry.getNextPlatformViewId].
-  /// If there is an id provided to you when constructing the concrete instance
-  /// of [PlatformViewController], use the id provided.
-  ///
-  /// It is used when handling semantics, composition orders and etc.
-  int get id;
+  /// See also [PlatformViewRegistry] which is a helper for managing platform view ids.
+  int get viewId;
 
   /// Dispatches the `event` to the platform view.
   void dispatchPointerEvent(PointerEvent event);
