@@ -16,7 +16,7 @@ import 'package:stream_channel/isolate_channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test_core/src/runner/hack_register_platform.dart' as hack; // ignore: implementation_imports
 import 'package:test_core/src/executable.dart' as test; // ignore: implementation_imports
-import 'package:vm_service_client/vm_service_client.dart';
+import 'package:vm_service_client/vm_service_client.dart'; // ignore: deprecated_member_use
 import 'package:test_api/src/backend/runtime.dart'; // ignore: implementation_imports
 import 'package:test_api/src/backend/suite_platform.dart'; // ignore: implementation_imports
 import 'package:test_core/src/runner/platform.dart'; // ignore: implementation_imports
@@ -47,7 +47,7 @@ Future<void> main(List<String> arguments) async {
 /// A platform that loads tests in isolates spawned within this Dart process.
 class VMPlatform extends PlatformPlugin {
   final CoverageCollector coverageCollector = CoverageCollector(
-    flutterProject: FlutterProject.current(),
+    libraryPredicate: (String libraryName) => libraryName.contains(FlutterProject.current().manifest.appName),
   );
   final Map<String, Future<void>> _pending = <String, Future<void>>{};
   final String precompiledPath = path.join('.dart_tool', 'build', 'generated', 'flutter_tools');

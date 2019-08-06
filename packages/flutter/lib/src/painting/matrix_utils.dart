@@ -144,6 +144,54 @@ class MatrixUtils {
   /// Returns a rect that bounds the result of applying the given matrix as a
   /// perspective transform to the given rect.
   ///
+  /// This version of the operation is slower than the regular transformRect
+  /// method, but it avoids creating infinite values from large finite values
+  /// if it can.
+  static Rect _safeTransformRect(Matrix4 transform, Rect rect) {
+    final Float64List storage = transform.storage;
+    final bool isAffine = storage[3] == 0.0 &&
+        storage[7] == 0.0 &&
+        storage[15] == 1.0;
+
+    _minMax ??= Float64List(4);
+
+    _accumulate(storage, rect.left,  rect.top,    true,  isAffine);
+    _accumulate(storage, rect.right, rect.top,    false, isAffine);
+    _accumulate(storage, rect.left,  rect.bottom, false, isAffine);
+    _accumulate(storage, rect.right, rect.bottom, false, isAffine);
+
+    return Rect.fromLTRB(_minMax[0], _minMax[1], _minMax[2], _minMax[3]);
+  }
+
+  static Float64List _minMax;
+  static void _accumulate(Float64List m, double x, double y,
+      bool first, bool isAffine)
+  {
+    final double w = isAffine ? 1.0 : 1.0 / (m[3] * x + m[7] * y + m[15]);
+    final double tx = (m[0] * x + m[4] * y + m[12]) * w;
+    final double ty = (m[1] * x + m[5] * y + m[13]) * w;
+    if (first) {
+      _minMax[0] = _minMax[2] = tx;
+      _minMax[1] = _minMax[3] = ty;
+    } else {
+      if (tx < _minMax[0]) {
+        _minMax[0] = tx;
+      }
+      if (ty < _minMax[1]) {
+        _minMax[1] = ty;
+      }
+      if (tx > _minMax[2]) {
+        _minMax[2] = tx;
+      }
+      if (ty > _minMax[3]) {
+        _minMax[3] = ty;
+      }
+    }
+  }
+
+  /// Returns a rect that bounds the result of applying the given matrix as a
+  /// perspective transform to the given rect.
+  ///
   /// This function assumes the given rect is in the plane with z equals 0.0.
   /// The transformed rect is then projected back into the plane with z equals
   /// 0.0 before computing its bounding rect.
@@ -153,6 +201,11 @@ class MatrixUtils {
     final double y = rect.top;
     final double w = rect.right - x;
     final double h = rect.bottom - y;
+
+    // We want to avoid turning a finite rect into an infinite one if we can.
+    if (!w.isFinite || !h.isFinite) {
+      return _safeTransformRect(transform, rect);
+    }
 
     // Transforming the 4 corners of a rectangle the straightforward way
     // incurs the cost of transforming 4 points using vector math which

@@ -14,7 +14,7 @@ import '../dart/package_map.dart';
 import '../globals.dart';
 import '../macos/xcode.dart';
 import '../project.dart';
-import '../reporting/usage.dart';
+import '../reporting/reporting.dart';
 
 import 'context.dart';
 import 'file_system.dart';
@@ -54,15 +54,12 @@ class GenSnapshot {
       ...additionalArgs,
     ];
 
-    final String snapshotterPath = getSnapshotterPath(snapshotType);
+    String snapshotterPath = getSnapshotterPath(snapshotType);
 
-    // iOS gen_snapshot is a multi-arch binary. Running as an i386 binary will
-    // generate armv7 code. Running as an x86_64 binary will generate arm64
-    // code. /usr/bin/arch can be used to run binaries with the specified
-    // architecture.
+    // iOS has a separate gen_snapshot for armv7 and arm64 in the same,
+    // directory. So we need to select the right one.
     if (snapshotType.platform == TargetPlatform.ios) {
-      final String hostArch = iosArch == IOSArch.armv7 ? '-i386' : '-x86_64';
-      return runCommandAndStreamOutput(<String>['/usr/bin/arch', hostArch, snapshotterPath, ...args]);
+      snapshotterPath += '_' + getNameForIOSArch(iosArch);
     }
 
     StringConverter outputFilter;
@@ -257,9 +254,12 @@ class AOTSnapshotter {
       printError('Failed to link AOT snapshot. Linker terminated with exit code ${compileResult.exitCode}');
       return linkResult;
     }
+    // See https://github.com/flutter/flutter/issues/22560
+    // These have to be placed in a .noindex folder to prevent Xcode from
+    // using Spotlight to find them and potentially attach the wrong ones.
     final RunResult dsymResult = await xcode.dsymutil(<String>[
       appLib,
-      '-o', fs.path.join(outputPath, 'App.framework.dSYM'),
+      '-o', fs.path.join(outputPath, 'App.framework.dSYM.noindex'),
     ]);
     if (dsymResult.exitCode != 0) {
       printError('Failed to extract dSYM out of dynamic lib');

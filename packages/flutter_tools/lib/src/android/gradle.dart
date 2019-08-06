@@ -24,8 +24,7 @@ import '../features.dart';
 import '../flutter_manifest.dart';
 import '../globals.dart';
 import '../project.dart';
-import '../reporting/usage.dart';
-import '../runner/flutter_command.dart';
+import '../reporting/reporting.dart';
 import 'android_sdk.dart';
 import 'android_studio.dart';
 
@@ -747,11 +746,7 @@ Future<void> _buildGradleProjectV2(
       printError('The Gradle failure may have been because of AndroidX incompatibilities in this Flutter app.');
       printError('See https://goo.gl/CP92wY for more information on the problem and how to fix it.');
       printError('*******************************************************************************************');
-      String commandName = '';
-      if (FlutterCommand.current != null) {
-        commandName = '-${FlutterCommand.current.name}';
-      }
-      flutterUsage.sendEvent('build$commandName', 'android-x-failure');
+      BuildEvent('android-x-failure').send();
     }
     throwToolExit('Gradle task $assembleTask failed with exit code $exitCode', exitCode: exitCode);
   }
@@ -780,7 +775,7 @@ Future<void> _buildGradleProjectV2(
           color: TerminalColor.green);
     }
   } else {
-    final File bundleFile = _findBundleFile(project, buildInfo);
+    final File bundleFile = findBundleFile(project, buildInfo);
     if (bundleFile == null)
       throwToolExit('Gradle build failed to produce an Android bundle package.');
 
@@ -825,24 +820,30 @@ Iterable<File> findApkFiles(GradleProject project, AndroidBuildInfo androidBuild
   });
 }
 
-File _findBundleFile(GradleProject project, BuildInfo buildInfo) {
+@visibleForTesting
+File findBundleFile(GradleProject project, BuildInfo buildInfo) {
   final String bundleFileName = project.bundleFileFor(buildInfo);
-
-  if (bundleFileName == null)
+  if (bundleFileName == null) {
     return null;
-  final String modeName = camelCase(buildInfo.modeName);
-  File bundleFile = project.bundleDirectory.childDirectory(modeName).childFile(bundleFileName);
-  if (bundleFile.existsSync())
+  }
+  File bundleFile = project.bundleDirectory
+    .childDirectory(camelCase(buildInfo.modeName))
+    .childFile(bundleFileName);
+  if (bundleFile.existsSync()) {
     return bundleFile;
-  if (buildInfo.flavor != null) {
-
-    // Android Studio Gradle plugin v3 adds the flavor to the path. For the bundle the folder name is the flavor plus the mode name.
-    // On linux, filenames are case sensitive.
-    bundleFile = project.bundleDirectory
-        .childDirectory(camelCase('${buildInfo.flavor}_$modeName'))
-        .childFile(bundleFileName);
-    if (bundleFile.existsSync())
-      return bundleFile;
+  }
+  if (buildInfo.flavor == null) {
+    return null;
+  }
+  // Android Studio Gradle plugin v3 adds the flavor to the path. For the bundle the
+  // folder name is the flavor plus the mode name. On Windows, filenames aren't case sensitive.
+  // For example: foo_barRelease where `foo_bar` is the flavor and `Release` the mode name.
+  final String childDirName = '${buildInfo.flavor}${camelCase('_' + buildInfo.modeName)}';
+  bundleFile = project.bundleDirectory
+      .childDirectory(childDirName)
+      .childFile(bundleFileName);
+  if (bundleFile.existsSync()) {
+    return bundleFile;
   }
   return null;
 }
