@@ -11,6 +11,8 @@ final List<Page> _allPages = <Page>[
   const ScrollViewNestedPlatformView(),
 ];
 
+const String kPageNameMotionEvent = 'motion_event';
+
 void main() {
   enableFlutterDriverExtension(handler: driverDataHandler.handleMessage);
   runApp(MaterialApp(home: Home()));
@@ -36,5 +38,18 @@ class Home extends StatelessWidget {
         builder: (_) => Scaffold(
               body: page,
             )));
+  }
+}
+
+Future<String> _handleMessage(String message) async {
+  final List<String> args = message.split('|');
+  assert(args.length == 2);
+  final String page = args.first;
+  final String command = args.last;
+  assert(page != command);
+  switch(page) {
+    case kPageNameMotionEvent: {
+      return motionEventPageDriverDataHandler.handleMessage;
+    }
   }
 }

@@ -18,6 +18,8 @@ MethodChannel channel = const MethodChannel('android_views_integration');
 
 const String kEventsFileName = 'touchEvents';
 
+FutureDataHandler motionEventPageDriverDataHandler = FutureDataHandler();
+
 class MotionEventsPage extends Page {
   const MotionEventsPage()
       : super('Motion Event Tests', const ValueKey<String>('MotionEventsListTile'));
@@ -41,8 +43,6 @@ class FutureDataHandler {
     return handler(message);
   }
 }
-
-FutureDataHandler driverDataHandler = FutureDataHandler();
 
 class MotionEventsBody extends StatefulWidget {
   @override
@@ -180,7 +180,7 @@ class MotionEventsBodyState extends State<MotionEventsBody> {
   void onPlatformViewCreated(int id) {
     viewChannel = MethodChannel('simple_view/$id');
     viewChannel.setMethodCallHandler(onViewMethodChannelCall);
-    driverDataHandler.handlerCompleter.complete(handleDriverMessage);
+    motionEventPageDriverDataHandler.handlerCompleter.complete(handleDriverMessage);
   }
 
   void listenToFlutterViewEvents() {
