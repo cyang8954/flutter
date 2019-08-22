@@ -24,15 +24,18 @@ Future<void> main() async {
   FlutterDriver driver;
   String target;
 
+  setUpAll(() async {
+    driver = await FlutterDriver.connect();
+    await driver.waitUntilNoTransientCallbacks();
+    target = await driver.requestData('main|target_platform');
+  });
+
+  tearDownAll(() async {
+    await driver.close();
+  });
+
+
   group('MotionEvents tests ', () {
-    setUpAll(() async {
-      driver = await FlutterDriver.connect();
-    });
-
-    tearDownAll(() async {
-      await driver.close();
-    });
-
     // This test suite only tests Android.
     // Has to be run as the first test case.
     test('recomposition', () async {
@@ -40,31 +43,23 @@ Future<void> main() async {
           find.byValueKey('MotionEventsListTile');
       await driver.tap(motionEventsListTile);
       await driver.waitFor(find.byValueKey('PlatformView'));
-      target = await driver.requestData('target_platform');
-      print(target);
       if (target == 'android') {
-        final String errorMessage = await driver.requestData('run test');
+        final String errorMessage = await driver.requestData('motion_event|run test');
         expect(errorMessage, '');
       }
-      final String popStatus = await driver.requestData('pop');
+      final String popStatus = await driver.requestData('motion_event|pop');
       assert(popStatus == 'success');
     });
   });
 
   group('Composition tests', () {
-    setUpAll(() async {
-      driver = await FlutterDriver.connect();
-    });
-
-    tearDownAll(() async {
-      await driver.close();
-    });
     test('mutations standard', () async {
       assert(target == 'ios' || target == 'android');
       final SerializableFinder motionEventsListTile =
           find.byValueKey('MutationPageListTile');
       await driver.tap(motionEventsListTile);
       await driver.waitFor(find.byValueKey('PlatformView0'));
+      await driver.waitUntilNoTransientCallbacks();
       final List<int> screenShot = await driver.screenshot();
       final String path = target == 'ios'?kIOSScreenShotPathStandard:kAndroidScreenShotPathStandard;
       final File file = File(path);
@@ -82,6 +77,7 @@ Future<void> main() async {
           find.byValueKey('ScrollViewNestedPlatformViewListTile');
       await driver.tap(motionEventsListTile);
       await driver.waitFor(find.byValueKey('PlatformView'));
+      await driver.waitUntilNoTransientCallbacks();
       final List<int> screenShot = await driver.screenshot();
       final String path = target == 'ios'?kIOSScreenShotPathWithScrollView:kAndroidScreenShotPathWithScrollView;
       final File file = File(path);
