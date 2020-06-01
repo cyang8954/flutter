@@ -51,6 +51,7 @@ import 'src/globals.dart' as globals;
 import 'src/runner/flutter_command.dart';
 import 'src/web/compile.dart';
 import 'src/web/web_runner.dart';
+import 'src/commands/plugin.dart';
 
 /// Main entry point for commands.
 ///
@@ -104,6 +105,7 @@ Future<void> main(List<String> args) async {
     UpdatePackagesCommand(hidden: !verboseHelp),
     UpgradeCommand(),
     VersionCommand(),
+    PluginCommand(verboseHelp: verboseHelp),
     SymbolizeCommand(
       stdio: globals.stdio,
       fileSystem: globals.fs,

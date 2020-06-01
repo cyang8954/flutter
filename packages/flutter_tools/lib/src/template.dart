@@ -31,7 +31,7 @@ import 'globals.dart' as globals hide fs;
 /// 'img.tmpl', or '-<language>.tmpl' extensions.
 class Template {
   Template(Directory templateSource, Directory baseDir, this.imageSourceDir, {
-    @required FileSystem fileSystem,
+    @required FileSystem fileSystem
   }) : _fileSystem = fileSystem {
     _templateFilePaths = <String, String>{};
 
@@ -59,7 +59,7 @@ class Template {
     }
   }
 
-  static Future<Template> fromName(String name, { @required FileSystem fileSystem }) async {
+  static Future<Template> fromName(String name, { @required FileSystem fileSystem, bool renderMobile = true }) async {
     // All named templates are placed in the 'templates' directory
     final Directory templateDir = _templateDirectoryInPackage(name, fileSystem);
     final Directory imageDir = await _templateImageDirectory(name, fileSystem);
@@ -108,26 +108,26 @@ class Template {
         }
         relativeDestinationPath = relativeDestinationPath.replaceAll('$platform-$language.tmpl', platform);
       }
-      // Only build a web project if explicitly asked.
-      final bool web = context['web'] as bool;
-      if (relativeDestinationPath.contains('web') && !web) {
+
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'ios')) {
         return null;
       }
-      // Only build a Linux project if explicitly asked.
-      final bool linux = context['linux'] as bool;
-      if (relativeDestinationPath.startsWith('linux.tmpl') && !linux) {
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'android')) {
         return null;
       }
-      // Only build a macOS project if explicitly asked.
-      final bool macOS = context['macos'] as bool;
-      if (relativeDestinationPath.startsWith('macos.tmpl') && !macOS) {
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'web')) {
         return null;
       }
-      // Only build a Windows project if explicitly asked.
-      final bool windows = context['windows'] as bool;
-      if (relativeDestinationPath.startsWith('windows.tmpl') && !windows) {
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'linux')) {
         return null;
       }
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'macos')) {
+        return null;
+      }
+      if (!_shouldRenderRelativePath(context, relativeDestinationPath, 'windows')) {
+        return null;
+      }
+
       final String projectName = context['projectName'] as String;
       final String androidIdentifier = context['androidIdentifier'] as String;
       final String pluginClass = context['pluginClass'] as String;
@@ -139,7 +139,7 @@ class Template {
         .replaceAll(imageTemplateExtension, '')
         .replaceAll(templateExtension, '');
 
-      if (androidIdentifier != null) {
+      if (androidIdentifier != null && _shouldRenderRelativePath(context, relativeDestinationPath, 'android')) {
         finalDestinationPath = finalDestinationPath
             .replaceAll('androidIdentifier', androidIdentifier.replaceAll('.', pathSeparator));
       }
@@ -230,6 +230,21 @@ class Template {
     });
 
     return fileCount;
+  }
+
+  bool _shouldRenderRelativePath(Map<String, dynamic> context, String relativeDestinationPath, String templateName) {
+    if (templateName != 'ios' && templateName != 'android' && context[templateName] == null) {
+      // Special case, we support iOS and Android by default if templateName in context are not specified.
+      // For other platforms, the user must explicitly specify the template name.
+      return false;
+    }
+
+    final bool render = context[templateName] as bool;
+    if (relativeDestinationPath.contains(templateName) && !render) {
+      return false;
+    }
+
+    return true;
   }
 }
 
