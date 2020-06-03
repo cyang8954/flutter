@@ -94,7 +94,6 @@ class PluginAddPlatformsCommand extends FlutterCommand with PluginCommandMixin {
           exitCode: 2);
     }
     final FlutterProject project = FlutterProject.fromDirectory(projectDir);
-    
     final String projectDirPath =
         globals.fs.path.normalize(projectDir.absolute.path);
 
