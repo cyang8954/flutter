@@ -36,7 +36,8 @@ const String _kNoPlatformsMessage = 'Must specify at least one platform using --
 const String frameworkRevision = '12345678';
 const String frameworkChannel = 'omega';
 // TODO(fujino): replace FakePlatform.fromPlatform() with FakePlatform()
-final Generator _kNoColorTerminalPlatform = () => FakePlatform.fromPlatform(const LocalPlatform())..stdoutSupportsAnsi = false;
+final Generator _kNoColorTerminalPlatform = () => FakePlatform(stdinSupportsAnsi: false);
+// final Generator _kNoColorTerminalPlatform = () => FakePlatform.fromPlatform(const LocalPlatform())..stdoutSupportsAnsi = false;
 final Map<Type, Generator> noColorTerminalOverride = <Type, Generator>{
   Platform: _kNoColorTerminalPlatform,
 };

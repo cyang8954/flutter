@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_tools/src/base/terminal.dart';
-import 'package:flutter_tools/src/flutter_manifest.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../src/flutter_manifest.dart';
 import '../android/android.dart' as android_common;
 import '../android/android_workflow.dart';
 import '../android/gradle_utils.dart' as gradle;
 import '../base/common.dart';
 import '../base/file_system.dart';
+import '../base/terminal.dart';
 import '../base/utils.dart';
 import '../cache.dart';
 import '../convert.dart';
@@ -504,15 +504,15 @@ abstract class CreateBase extends FlutterCommand {
     final String relativeExampleMain = globals.fs.path.join(pluginPath, 'example', 'lib', 'main.dart');
     globals.printStatus('''
 
-    Your plugin code is in $relativePluginMain.
+Your plugin code is in $relativePluginMain.
 
-    You example app code is in $relativeExampleMain.
+You example app code is in $relativeExampleMain.
 
     ''');
     if (platformsString != null && platformsString.isNotEmpty) {
       globals.printStatus('''
-    Host platform code is in the $platformsString directories under $pluginPath.
-    To edit platform code in an IDE see https://flutter.dev/developing-packages/#edit-plugin-package.
+Host platform code is in the $platformsString directories under $pluginPath.
+To edit platform code in an IDE see https://flutter.dev/developing-packages/#edit-plugin-package.
 
       ''');
     }

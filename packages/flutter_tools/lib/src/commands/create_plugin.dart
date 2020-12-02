@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_tools/src/dart/pub.dart';
-import 'package:flutter_tools/src/project.dart';
 
+import '../../src/project.dart';
 import '../android/gradle_utils.dart' as gradle;
 import '../base/common.dart';
 import '../base/file_system.dart';
+import '../dart/pub.dart';
 import '../features.dart';
 import '../globals.dart' as globals;
 import '../reporting/reporting.dart';
@@ -37,6 +37,7 @@ class CreatePluginCommand extends CreateBase {
     return <CustomDimensions, String>{
       CustomDimensions.commandCreateAndroidLanguage: stringArg('android-language'),
       CustomDimensions.commandCreateIosLanguage: stringArg('ios-language'),
+      CustomDimensions.commandCreatePluginPlatforms: stringsArg('platforms')?.join(','),
     };
   }
 
