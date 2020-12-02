@@ -27,6 +27,7 @@ import 'package:process/process.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
+import '../../integration.shard/test_utils.dart';
 import '../../src/common.dart';
 import '../../src/context.dart';
 import '../../src/pubspec_schema.dart';
@@ -35,8 +36,12 @@ import '../../src/testbed.dart';
 const String _kNoPlatformsMessage = 'Must specify at least one platform using --platforms.\n';
 const String frameworkRevision = '12345678';
 const String frameworkChannel = 'omega';
+const String _kMockEngineEnvironment = '12345677';
+const String _kMockCurrentOperatingSystem = 'linux';
 // TODO(fujino): replace FakePlatform.fromPlatform() with FakePlatform()
-final Generator _kNoColorTerminalPlatform = () => FakePlatform(stdinSupportsAnsi: false);
+final Generator _kNoColorTerminalPlatform = () => FakePlatform(stdinSupportsAnsi: false, environment: <String, String> {
+  kLocalEngineEnvironment : _kMockEngineEnvironment,
+}, operatingSystem: _kMockCurrentOperatingSystem);
 // final Generator _kNoColorTerminalPlatform = () => FakePlatform.fromPlatform(const LocalPlatform())..stdoutSupportsAnsi = false;
 final Map<Type, Generator> noColorTerminalOverride = <Type, Generator>{
   Platform: _kNoColorTerminalPlatform,
