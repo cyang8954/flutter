@@ -151,8 +151,7 @@ class CreatePluginCommand extends CreateBase {
 
   void _validateRequestedPlatforms(List<String> platforms) {
     if (platforms == null || platforms.isEmpty) {
-      throwToolExit(_kNoPlatformsMessage,
-        exitCode: 2);
+      throwToolExit(_kNoPlatformsMessage, exitCode: 2);
     }
     final List<String> disabledPlatforms = <String>[];
     if (platforms.contains('web') && !featureFlags.isWebEnabled) {
@@ -176,6 +175,5 @@ For more information on desktop platforms, see https://flutter.dev/desktop#set-u
 For more information on web, see https://flutter.dev/docs/get-started/web#set-up.
 
 ''', exitCode: 2);
-
   }
 }
